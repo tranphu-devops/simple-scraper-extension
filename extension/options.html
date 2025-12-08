@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>Settings</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>🔎 Database / API Settings</h1>
+    </header>
+
+    <div class="card">
+      <div class="controls">
+
+        <label>
+          API URL (backend của bạn):
+          <input class="input" type="text" id="apiUrl" placeholder="https://your-backend.com/api/save">
+        </label>
+        
+        <label>
+          API Key (nếu có):
+          <input class="input" type="text" id="apiKey" placeholder="token hoặc key">
+        </label>
+
+        <button id="saveBtn" class="btn btn-primary">Lưu cấu hình</button>
+        <span id="status" class="muted"></span>
+      </div>
+    </div>
+  </div>
+
+  <script src="options.js"></script>
+</body>
+
+</html>

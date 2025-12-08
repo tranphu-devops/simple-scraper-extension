@@ -1,0 +1,47 @@
+body {
+  font-family: Arial, sans-serif;
+  max-width: 900px;
+  margin: auto;
+  padding: 20px;
+}
+
+h1 {
+  margin-bottom: 20px;
+}
+
+a {
+  text-decoration: none;
+  color: #0066cc;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+.article-item {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.article-item h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+#backBtn, #goTopBtn {
+  padding: 8px 12px;
+  margin-right: 10px;
+  background: #007bff;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+#goTopBtn {
+  background: #28a745;
+}
+
+#backBtn:hover, #goTopBtn:hover {
+  opacity: 0.8;
+}

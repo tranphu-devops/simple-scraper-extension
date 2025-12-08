@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Simple Scraper Side Panel</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔎 Simple Scraper</h1>
+    </header>
+
+    <div class="card">
+      <div class="controls">
+        <div class="btn-row">
+          <button id="selectBtn" class="btn">Chọn vùng dữ liệu (thủ công)</button>
+        </div>
+
+        <div>
+          <label for="selectorInput"><strong>CSS selector</strong> <span class="muted">(vd: <code>article.meteredContent</code>)</span></label>
+          <input id="selectorInput" class="input" type="text" value="article.meteredContent" placeholder="article.meteredContent" />
+        </div>
+
+        <div class="btn-row">
+          <button id="autoBtn" class="btn btn-primary">Lấy tự động theo selector</button>
+          <button id="saveBtn" class="btn btn-primary" disabled>Lưu vào DB</button>
+        </div>
+
+        <div id="preview" class="preview">Chưa chọn phần tử nào.</div>
+
+        <div id="msg" class="muted" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <hr>
+    <footer class="muted">
+      <a href="#" id="openOptions">Mở trang Settings (API &amp; DB)</a>
+    </footer>
+  </div>
+
+  <script src="sidepanel.js"></script>
+</body>
+</html>
