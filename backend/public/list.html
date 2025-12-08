@@ -30,8 +30,8 @@
   </div>
 
   <!-- Search form -->
-  <form id="searchForm" class="row g-2 mb-4">
-    <div class="col-12 col-md-8">
+  <form id="searchForm" class="row g-2 mb-4 align-items-center">
+    <div class="col-12 col-md-6">
       <input
         type="text"
         class="form-control"
@@ -39,8 +39,18 @@
         placeholder="Tìm theo tiêu đề hoặc nội dung..."
       >
     </div>
-    <div class="col-6 col-md-2 d-grid">
-      <button type="submit" class="btn btn-primary">Tìm kiếm</button>
+
+    <div class="col-12 col-md-3">
+      <div class="form-check mt-2 mt-md-0">
+        <input class="form-check-input" type="checkbox" id="starredOnly">
+        <label class="form-check-label" for="starredOnly">
+          Chỉ hiển thị bài có ★ star
+        </label>
+      </div>
+    </div>
+
+    <div class="col-6 col-md-1 d-grid">
+      <button type="submit" class="btn btn-primary">Tìm</button>
     </div>
     <div class="col-6 col-md-2 d-grid">
       <button type="button" id="resetBtn" class="btn btn-outline-secondary">Reset</button>
@@ -69,6 +79,7 @@
 <script>
 let currentPage = 1;
 let currentQuery = '';
+let starredOnly = false;
 
 const PAGE_SIZE = 10;
 
@@ -77,6 +88,7 @@ async function loadList() {
   params.set('page', currentPage);
   params.set('pageSize', PAGE_SIZE);
   if (currentQuery) params.set('q', currentQuery);
+  if (starredOnly) params.set('starred', 'true');
 
   const res = await fetch('/api/list?' + params.toString());
   const json = await res.json();
@@ -100,8 +112,14 @@ async function loadList() {
   } else {
     listEl.innerHTML = items.map(item => `
         <a href="detail.html?id=${item.id}" class="list-group-item list-group-item-action py-3">
-            <h5 class="mb-1">${escapeHtml(item.title || '(không có tiêu đề)')}</h5>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-1">
+                ${item.is_starred ? '★ ' : ''}${escapeHtml(item.title || '(không có tiêu đề)')}
+              </h5>
+            </div>
             <small class="text-muted">${formatDate(item.created_at)}</small>
+          </div>
         </a>
         `).join('');
   }
@@ -190,6 +208,7 @@ function escapeHtml(str) {
 document.getElementById('searchForm').addEventListener('submit', (e) => {
   e.preventDefault();
   currentQuery = document.getElementById('searchInput').value.trim();
+  starredOnly = document.getElementById('starredOnly').checked;
   currentPage = 1;
   loadList();
 });
@@ -197,6 +216,7 @@ document.getElementById('searchForm').addEventListener('submit', (e) => {
 // Reset button
 document.getElementById('resetBtn').addEventListener('click', () => {
   document.getElementById('searchInput').value = '';
+  document.getElementById('starredOnly').checked = false;
   currentQuery = '';
   currentPage = 1;
   loadList();

@@ -130,21 +130,25 @@ app.get('/api/list', async (req, res) => {
     const page = Math.max(parseInt(req.query.page) || 1, 1);
     const pageSize = Math.min(parseInt(req.query.pageSize) || PAGE_SIZE_DEFAULT, 100);
     const qRaw = (req.query.q || '').trim();
+    const starredOnly = req.query.starred === 'true' || req.query.starred === '1';
 
-    let where = '';
+    const whereParts = ['is_deleted = FALSE'];
     const params = [];
     let idx = 1;
 
     if (qRaw) {
-      where = `WHERE is_deleted = FALSE AND (title ILIKE $${idx} OR text_content ILIKE $${idx})`;
+      whereParts.push(`(title ILIKE $${idx} OR text_content ILIKE $${idx})`);
       params.push(`%${qRaw}%`);
       idx++;
-    } else {
-      where = `WHERE is_deleted = FALSE`;
     }
 
-    // Đếm tổng số record
-    const countSql = `SELECT COUNT(*) FROM scraped_data ${where}`;
+    if (starredOnly) {
+      whereParts.push(`is_starred = TRUE`);
+    }
+
+    const whereClause = whereParts.length ? 'WHERE ' + whereParts.join(' AND ') : '';
+
+    const countSql = `SELECT COUNT(*) FROM scraped_data ${whereClause}`;
     const countResult = await pool.query(countSql, params);
     const total = parseInt(countResult.rows[0].count, 10);
     const totalPages = total === 0 ? 1 : Math.ceil(total / pageSize);
@@ -152,9 +156,9 @@ app.get('/api/list', async (req, res) => {
     const offset = (page - 1) * pageSize;
 
     const listSql = `
-      SELECT id, title, created_at
+      SELECT id, title, created_at, is_starred
       FROM scraped_data
-      ${where}
+      ${whereClause}
       ORDER BY created_at DESC
       LIMIT $${idx} OFFSET $${idx + 1}
     `;
@@ -183,7 +187,7 @@ app.get('/api/detail/:id', async (req, res) => {
   try {
     const id = Number(req.params.id);
     const result = await pool.query(`
-      SELECT id, url, title, html, text_content, created_at
+      SELECT id, url, title, html, text_content, created_at, is_starred, note
       FROM scraped_data
       WHERE id = $1
     `, [id]);
@@ -211,6 +215,40 @@ app.post('/api/delete/:id', async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     console.error(err);
+    res.status(500).json({ ok: false });
+  }
+});
+
+app.post('/api/star/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { starred } = req.body; // true / false
+
+    await pool.query(
+      'UPDATE scraped_data SET is_starred = $1 WHERE id = $2',
+      [!!starred, id]
+    );
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error star article:', err);
+    res.status(500).json({ ok: false });
+  }
+});
+
+app.post('/api/note/:id', async (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const { note } = req.body; // chuỗi note, có thể rỗng
+
+    await pool.query(
+      'UPDATE scraped_data SET note = $1 WHERE id = $2',
+      [note || null, id]
+    );
+
+    res.json({ ok: true });
+  } catch (err) {
+    console.error('Error updating note:', err);
     res.status(500).json({ ok: false });
   }
 });
