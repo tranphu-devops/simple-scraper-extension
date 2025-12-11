@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
   <link
     href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
     rel="stylesheet"
@@ -16,8 +17,8 @@
 <body class="bg-light">
 
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-  <div class="container-fluid">
-    <a class="navbar-brand" href="list.html">Scraped Articles</a>
+  <div class="container-fluid justify-content-center">
+    <a class="navbar-brand" href="list.html"><i class="fa-solid fa-house-chimney"></i> Scraped Articles</a>
   </div>
 </nav>
 
@@ -25,7 +26,7 @@
 
   <div class="row mb-3">
     <div class="col-12 col-md-8">
-      <h1 class="h3">Danh sách bài viết</h1>
+      <h1 class="h3"><i class="fa-solid fa-clipboard-list"></i> Danh sách bài viết</h1>
     </div>
   </div>
 
@@ -64,7 +65,7 @@
 
   <!-- Pagination -->
   <nav>
-    <ul class="pagination justify-content-center" id="pagination"></ul>
+    <ul class="pagination justify-content-end" id="pagination"></ul>
   </nav>
 
 </div>
@@ -114,11 +115,14 @@ async function loadList() {
         <a href="detail.html?id=${item.id}" class="list-group-item list-group-item-action py-3">
           <div class="d-flex justify-content-between align-items-center">
             <div>
-              <h5 class="mb-1">
-                ${item.is_starred ? '★ ' : ''}${escapeHtml(item.title || '(không có tiêu đề)')}
-              </h5>
+              <h6 class="mb-1">
+                ${item.is_starred ? '<i class="fa-solid fa-star"></i>  ' : ''}${cleanTitle(escapeHtml(item.title || '(không có tiêu đề)'))}
+              </h6>
             </div>
-            <small class="text-muted">${formatDate(item.created_at)}</small>
+            <small class="text-muted">
+              ${item.has_note ? '<i class="fa-solid fa-note-sticky"></i> ' : ''}
+              ${formatDate(item.created_at)}
+            </small>
           </div>
         </a>
         `).join('');
@@ -202,6 +206,16 @@ function escapeHtml(str) {
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;');
+}
+
+function cleanTitle(input) {
+  const marker = ' | by ';
+  const index = input.indexOf(marker);
+  if (index === -1) {
+    // Không có " | by " thì trả nguyên chuỗi
+    return input;
+  }
+  return input.slice(0, index);
 }
 
 // Search form

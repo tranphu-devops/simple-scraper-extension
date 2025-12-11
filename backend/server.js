@@ -156,7 +156,7 @@ app.get('/api/list', async (req, res) => {
     const offset = (page - 1) * pageSize;
 
     const listSql = `
-      SELECT id, title, created_at, is_starred
+      SELECT id, title, created_at, is_starred, (note IS NOT NULL) AS has_note
       FROM scraped_data
       ${whereClause}
       ORDER BY created_at DESC
