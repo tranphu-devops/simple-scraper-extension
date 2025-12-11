@@ -183,6 +183,12 @@ function googleTranslateElementInit() {
 
     document.getElementById("content").innerHTML =
       data.html || "<i>Không có nội dung HTML.</i>";
+    
+    const preElements = document.querySelectorAll('pre');
+    preElements.forEach(function(pre) {
+        pre.setAttribute('translate', 'no');
+        // pre.classList.add('notranslate');
+    });
 
     noteInput.value = data.note || "";
     if (data.note) {
